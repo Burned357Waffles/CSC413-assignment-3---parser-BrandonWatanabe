@@ -1,5 +1,5 @@
 package lexer;
-
+import java.util.regex.*;
 /**
  *  The Lexer class is responsible for scanning the source file
  *  which is a stream of characters and returning a stream of
@@ -14,9 +14,9 @@ public class Lexer {
   // next character to process
   private char ch;
   private SourceReader source;
-
+  private boolean bogusToken, readBadToken;
   // positions in line of current token
-  private int startPosition, endPosition;
+  private int startPosition, endPosition, lineNumber;
 
   /**
    *  Lexer constructor
@@ -37,10 +37,11 @@ public class Lexer {
    *  @param endPosition is the column in the source file where the token ends
    *  @return the Token; either an id or one for the reserved words
    */
-  public Token newIdToken( String id, int startPosition, int endPosition ) {
+  public Token newIdToken( String id, int startPosition, int endPosition, int lineNumber ) {
     return new Token(
       startPosition,
       endPosition,
+      lineNumber,
       Symbol.symbol( id, Tokens.Identifier )
     );
   }
@@ -56,14 +57,38 @@ public class Lexer {
    *  @param endPosition is the column in the source file where the int ends
    *  @return the int Token
    */
-  public Token newNumberToken( String number, int startPosition, int endPosition) {
+  public Token newNumberToken( String number, int startPosition, int endPosition, int lineNumber) {
     return new Token(
       startPosition,
       endPosition,
+      lineNumber,
       Symbol.symbol( number, Tokens.INTeger )
     );
   }
 
+  public Token newUtf16StringLitToken(String utf16string, int startPosition, int endPosition, int lineNumber)
+  {
+    if (bogusToken){
+      return nextToken();
+    }
+
+    return new Token(
+            startPosition,
+            endPosition,
+            lineNumber,
+            Symbol.symbol( utf16string, Tokens.Utf16StringLit )
+    );
+  }
+
+  public Token newTimestampToken(String timestamp, int startPosition, int endPosition, int lineNumber)
+  {
+    return new Token(
+            startPosition,
+            endPosition,
+            lineNumber,
+            Symbol.symbol( timestamp, Tokens.TimestampLit )
+    );
+  }
   /**
    *  build the token for operators (+ -) or separators (parens, braces)
    *  filter out comments which begin with two slashes
@@ -72,7 +97,7 @@ public class Lexer {
    *  @param endPosition is the column in the source file where the token ends
    *  @return the Token just found
    */
-  public Token makeToken( String s, int startPosition, int endPosition ) {
+  public Token makeToken( String s, int startPosition, int endPosition, int lineNumber ) {
     // filter comments
     if( s.equals("//") ) {
       try {
@@ -97,7 +122,63 @@ public class Lexer {
       return nextToken();
     }
 
-    return new Token( startPosition, endPosition, sym );
+    return new Token( startPosition, endPosition, lineNumber, sym );
+  }
+
+  public String readFourUtf16String(String utf)
+  {
+    try // check for the u
+    {
+      endPosition++;
+      utf += ch;
+      ch = source.read();
+      if (Character.toString(ch).equals("u"))
+      {
+        endPosition++;
+        utf += ch;
+        ch = source.read();
+      }
+      else
+      {
+        throw new Exception("not utf16string");
+      }
+    }
+    catch (Exception e)
+    {
+      atEOF = true;
+    }
+
+    try // check for the 4 hex
+    {
+      for (int i = 0; i < 4; i++)
+      {
+        if (Pattern.matches("[a-fA-F]", Character.toString(ch)) || Character.isDigit(ch))
+        {
+          endPosition++;
+          utf += ch;
+          ch = source.read();
+        }
+        else
+        {
+          endPosition++;
+          utf += ch;
+          Symbol sym = Symbol.symbol(utf, Tokens.BogusToken );
+
+          if( sym == null )
+          {
+            System.out.println("******** illegal character: " + utf);
+            atEOF = true;
+            bogusToken = true;
+          }
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      atEOF = true;
+      return utf;
+    }
+    return utf;
   }
 
   /**
@@ -126,6 +207,7 @@ public class Lexer {
 
     startPosition = source.getPosition();
     endPosition = startPosition - 1;
+    lineNumber = source.getLineno();
 
     if( Character.isJavaIdentifierStart( ch )) {
       // return tokens for ids and reserved words
@@ -141,24 +223,214 @@ public class Lexer {
         atEOF = true;
       }
 
-      return newIdToken( id, startPosition, endPosition );
+      return newIdToken( id, startPosition, endPosition, lineNumber );
     }
 
-    if( Character.isDigit( ch )) {
+    // TODO add in timestamp and utf16string here
+
+    if (Character.toString(ch).equals("\\"))
+    {
+      // returns token for utf16strings
+      String utf = "";
+      utf += readFourUtf16String(utf);
+
+      if (Character.toString(ch).equals("\\"))
+      {
+        utf = readFourUtf16String(utf);
+      }
+
+      return newUtf16StringLitToken(utf, startPosition, endPosition, lineNumber);
+    }
+
+    if( Character.isDigit( ch ))
+    {
       // return number tokens
       String number = "";
 
-      try {
-        do {
+      try
+      {
+        do
+        {
           endPosition++;
           number += ch;
           ch = source.read();
-        } while( Character.isDigit( ch ));
+        } while (Character.isDigit(ch));
+
+        if (number.length() == 4) {
+          if (Character.toString(ch).equals("~"))
+          {
+            endPosition++;
+            number += ch;
+            ch = source.read();
+          }
+          else
+          {
+            return newNumberToken( number, startPosition, endPosition - 1, lineNumber );
+          }
+          try // month
+          {
+            for (int i = 0; i < 2; i++)
+            {
+              if (Character.isDigit(ch) && Character.getNumericValue(ch) < 12)
+              {
+                endPosition++;
+                number += ch;
+                ch = source.read();
+              }
+              else
+              {
+                atEOF = true;
+                return makeToken( number, startPosition, endPosition, lineNumber );
+              }
+            }
+          }
+
+          catch (Exception e)
+          {
+            atEOF = true;
+          }
+
+          if (Character.toString(ch).equals("~"))
+          {
+            endPosition++;
+            number += ch;
+            ch = source.read();
+          }
+          else
+          {
+            atEOF = true;
+            return makeToken( number, startPosition, endPosition, lineNumber );
+          }
+          try // day
+          {
+            for (int i = 0; i < 2; i++)
+            {
+              if (Character.isDigit(ch))
+              {
+                endPosition++;
+                number += ch;
+                ch = source.read();
+              }
+              else
+              {
+                atEOF = true;
+                return makeToken( number, startPosition, endPosition, lineNumber );
+              }
+            }
+          }
+
+          catch (Exception e)
+          {
+            atEOF = true;
+          }
+
+          if (Character.toString(ch).equals("~"))
+          {
+            endPosition++;
+            number += ch;
+            ch = source.read();
+          }
+          else
+          {
+            atEOF = true;
+            return makeToken( number, startPosition, endPosition, lineNumber );
+          }
+          try // hour
+          {
+            for (int i = 0; i < 2; i++)
+            {
+              if (Character.isDigit(ch))
+              {
+                endPosition++;
+                number += ch;
+                ch = source.read();
+              }
+              else
+              {
+                atEOF = true;
+                return makeToken( number, startPosition, endPosition, lineNumber );
+              }
+            }
+          }
+
+          catch (Exception e)
+          {
+            atEOF = true;
+          }
+
+          if (Character.toString(ch).equals(":"))
+          {
+            endPosition++;
+            number += ch;
+            ch = source.read();
+          }
+          else
+          {
+            atEOF = true;
+            return makeToken( number, startPosition, endPosition, lineNumber );
+          }
+          try // minute
+          {
+            for (int i = 0; i < 2; i++)
+            {
+              if (Character.isDigit(ch))
+              {
+                endPosition++;
+                number += ch;
+                ch = source.read();
+              }
+              else
+              {
+                atEOF = true;
+                return makeToken( number, startPosition, endPosition, lineNumber );
+              }
+            }
+          }
+
+          catch (Exception e)
+          {
+            atEOF = true;
+          }
+
+          if (Character.toString(ch).equals(":"))
+          {
+            endPosition++;
+            number += ch;
+            ch = source.read();
+          }
+          else
+          {
+            atEOF = true;
+            return makeToken( number, startPosition, endPosition, lineNumber );
+          }
+          try // second
+          {
+            for (int i = 0; i < 2; i++)
+            {
+              if (Character.isDigit(ch))
+              {
+                endPosition++;
+                number += ch;
+                ch = source.read();
+              }
+              else
+              {
+                atEOF = true;
+                return makeToken( number, startPosition, endPosition, lineNumber );
+              }
+            }
+          }
+
+          catch (Exception e)
+          {
+            atEOF = true;
+          }
+          return newTimestampToken (number, startPosition, endPosition, lineNumber);
+        }
       } catch( Exception e ) {
         atEOF = true;
       }
-
-      return newNumberToken( number, startPosition, endPosition );
+      return newNumberToken( number, startPosition, endPosition, lineNumber );
     }
 
     // At this point the only tokens to check for are one or two
@@ -178,13 +450,13 @@ public class Lexer {
       sym = Symbol.symbol( op, Tokens.BogusToken );
       if (sym == null) {
         // it must be a one char token
-        return makeToken( charOld, startPosition, endPosition );
+        return makeToken( charOld, startPosition, endPosition, lineNumber );
       }
 
       endPosition++;
       ch = source.read();
 
-      return makeToken( op, startPosition, endPosition );
+      return makeToken( op, startPosition, endPosition, lineNumber );
     } catch( Exception e ) { /* no-op */ }
 
     atEOF = true;
@@ -192,30 +464,37 @@ public class Lexer {
       op = charOld;
     }
 
-    return makeToken( op, startPosition, endPosition );
+    return makeToken( op, startPosition, endPosition, lineNumber );
   }
 
-/*
-  public static void main(String args[]) {
+  public static void main(String [] args)
+  {
     Token token;
 
-    try {
-      Lexer lex = new Lexer( "simple.x" );
+    if (args.length != 1)
+    {
+      System.out.println("usage: java lexer.Lexer filename.x");
+    }
 
-      while( true ) {
-        token = lex.nextToken();
+    else
+    {
+      try
+      {
+        Lexer lex = new Lexer(args[0]);
 
-        String p = "L: " + token.getLeftPosition() +
-          " R: " + token.getRightPosition() + "  " +
-          TokenType.tokens.get(token.getKind()) + " ";
+        while (!lex.atEOF)
+        {
+          token = lex.nextToken();
 
-        if ((token.getKind() == Tokens.Identifier) || (token.getKind() == Tokens.INTeger)) {
-          p += token.toString();
+          /*
+          System.out.printf("%-11s left:%-8d right:%-8d line:%-8d %s \n", token.toString(),
+                  token.getLeftPosition(), token.getRightPosition(),
+                  token.getLineNumber(), token.getKind());
+          */
         }
-
-        System.out.println( p + ": " + lex.source.getLineno() );
+      } catch (Exception e)
+      {
       }
-    } catch (Exception e) {}
+    }
   }
-*/
 }

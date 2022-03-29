@@ -37,7 +37,7 @@ public class Symbol {
         // bogus string so don't enter into symbols
         return null;
       }
-      // System.out.println( "new symbol: " + u + " Kind: " + kind );
+      // System.out.println( "new symbol: " + newTokenString + " Kind: " + kind );
       s = new Symbol( newTokenString, kind );
       symbols.put( newTokenString, s );
     }

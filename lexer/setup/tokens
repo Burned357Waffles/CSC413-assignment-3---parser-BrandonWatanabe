@@ -13,10 +13,14 @@ LeftBrace {
 RightBrace }
 LeftParen (
 RightParen )
+LeftBracket [
+RightBracket ]
 Comma ,
 Assign =
 Equal ==
 NotEqual !=
+Greater >
+GreaterEqual >=
 Less <
 LessEqual <=
 Plus +
@@ -26,3 +30,11 @@ And &
 Multiply *
 Divide /
 Comment //
+Hash #
+Begin begin
+End end
+In in
+Utf16String utf16string
+Utf16StringLit <utf16string>
+TimestampType timestamp
+TimestampLit <timestamp>

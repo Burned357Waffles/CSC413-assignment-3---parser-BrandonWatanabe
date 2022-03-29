@@ -8,7 +8,10 @@ public enum Tokens {
   BogusToken,Program,Int,BOOLean,If,
     Then,Else,While,Function,Return,
     Identifier,INTeger,LeftBrace,RightBrace,LeftParen,
-    RightParen,Comma,Assign,Equal,NotEqual,
-    Less,LessEqual,Plus,Minus,Or,
-    And,Multiply,Divide,Comment
+    RightParen,LeftBracket,RightBracket,Comma,Assign,
+    Equal,NotEqual,Greater,GreaterEqual,Less,
+    LessEqual,Plus,Minus,Or,And,
+    Multiply,Divide,Comment,Hash,Begin,
+    End,In,Utf16String,Utf16StringLit,TimestampType,
+    TimestampLit
 }
