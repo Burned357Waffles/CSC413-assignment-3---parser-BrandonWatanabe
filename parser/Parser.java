@@ -239,6 +239,24 @@ public class Parser {
         return t;
     }
 
+    public AST rCasrBlock() throws SyntaxError
+    {
+        AST t = new FormalsTree();
+        return t;
+    }
+
+    public AST rCaseStatement() throws  SyntaxError
+    {
+        AST t = new FormalsTree();
+        return t;
+    }
+
+    public AST rDefaultStatement() throws  SyntaxError
+    {
+        AST t = new FormalsTree();
+        return t;
+    }
+
     /**
      * <
      * pre>
