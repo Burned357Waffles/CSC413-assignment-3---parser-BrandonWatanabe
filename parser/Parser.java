@@ -57,7 +57,7 @@ public class Parser {
     private Token currentToken;
     private Lexer lex;
     private EnumSet<Tokens> relationalOps
-            = EnumSet.of(Tokens.Equal, Tokens.NotEqual, Tokens.Less, Tokens.LessEqual);
+            = EnumSet.of(Tokens.Equal, Tokens.NotEqual, Tokens.Less, Tokens.LessEqual, Tokens.Greater, Tokens.GreaterEqual);
     private EnumSet<Tokens> addingOps
             = EnumSet.of(Tokens.Plus, Tokens.Minus, Tokens.Or);
     private EnumSet<Tokens> multiplyingOps
