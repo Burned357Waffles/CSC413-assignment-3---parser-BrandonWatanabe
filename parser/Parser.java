@@ -465,7 +465,11 @@ public class Parser {
             scan();
             return;
         }
-        throw new SyntaxError(currentToken, kind);
+        else
+        {
+            return;
+        }
+        //throw new SyntaxError(currentToken, kind);
     }
 
     private void scan() {
