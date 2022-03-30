@@ -12,7 +12,7 @@ public class Utf16StringTree extends AST {
     }
 
     public Object accept(ASTVisitor v) {
-        return v.visitUtf16StringTypeTree(this);
+        return v.visitUtf16StringTree(this);
     }
 
     public Symbol getSymbol() {

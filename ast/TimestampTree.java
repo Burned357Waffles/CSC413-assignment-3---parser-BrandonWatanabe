@@ -12,7 +12,7 @@ public class TimestampTree extends AST {
     }
 
     public Object accept(ASTVisitor v) {
-        return v.visitTimestampTypeTree(this);
+        return v.visitTimestampTree(this);
     }
 
     public Symbol getSymbol() {
