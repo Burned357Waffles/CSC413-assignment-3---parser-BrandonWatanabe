@@ -251,8 +251,8 @@ public class Constrainer extends ASTVisitor {
         if ( t.getKid(1).accept(this) != boolTree) {
             constraintError(ConstrainerErrors.BadConditional);
         }
-        t.getKid(2).accept(this);
-        t.getKid(3).accept(this);
+       t.getKid(2).accept(this);
+       t.getKid(3).accept(this);
         return null;
     }
         
@@ -365,6 +365,32 @@ public class Constrainer extends ASTVisitor {
     public Object visitTimestampTree(AST t) {
         decorate(t,timestampTree);
         return timestampTree;
+    }
+
+    @Override
+    public Object visitSwitchTree(AST t) {
+        symtab.beginScope();
+        visitKids(t);
+        symtab.endScope();
+        return null;
+    }
+
+    @Override
+    public Object visitSwitchBlockTree(AST t) {
+        symtab.beginScope();
+        visitKids(t);
+        symtab.endScope();
+        return null;
+    }
+
+    @Override
+    public Object visitCaseTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitDefaultTree(AST t) {
+        return null;
     }
 
     public Object visitIntTypeTree(AST t) {return null;}

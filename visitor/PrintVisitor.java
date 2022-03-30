@@ -83,21 +83,49 @@ public class PrintVisitor extends ASTVisitor {
 
     @Override
     public Object visitUtf16StringTypeTree(AST t) {
+        print("Utf16StringType", t);
         return null;
     }
 
     @Override
     public Object visitUtf16StringTree(AST t) {
+        print("Utf16String: " + ((Utf16StringTree)t).getSymbol().toString(), t);
         return null;
     }
 
     @Override
     public Object visitTimestampTypeTree(AST t) {
+        print("TimestampType", t);
         return null;
     }
 
     @Override
     public Object visitTimestampTree(AST t) {
+        print("Timestamp: " + ((TimestampTree)t).getSymbol().toString(), t);
+        return null;
+    }
+
+    @Override
+    public Object visitSwitchTree(AST t) {
+        print("Switch", t);
+        return null;
+    }
+
+    @Override
+    public Object visitSwitchBlockTree(AST t) {
+        print("Switch Block", t);
+        return null;
+    }
+
+    @Override
+    public Object visitCaseTree(AST t) {
+        print("Case", t);
+        return null;
+    }
+
+    @Override
+    public Object visitDefaultTree(AST t) {
+        print("Default", t);
         return null;
     }
 }

@@ -149,7 +149,7 @@ public class Parser {
 
     boolean startingStatement() {
         if (isNextTok(Tokens.If) || isNextTok(Tokens.While) || isNextTok(Tokens.Return)
-                || isNextTok(Tokens.LeftBrace) || isNextTok(Tokens.Identifier)) {
+                || isNextTok(Tokens.LeftBrace) || isNextTok(Tokens.Identifier) || isNextTok(Tokens.Switch)) {
             return true;
         }
         return false;
@@ -239,21 +239,47 @@ public class Parser {
         return t;
     }
 
-    public AST rCasrBlock() throws SyntaxError
-    {
-        AST t = new FormalsTree();
+    public AST rSwitchBlock() throws SyntaxError {
+        expect(Tokens.LeftParen);
+        AST t = new SwitchBlockTree();
+        t.addKid(rName()); // '<id'>
+        expect(Tokens.RightParen);
+        t.addKid(rCaseBlock());
         return t;
     }
 
-    public AST rCaseStatement() throws  SyntaxError
-    {
-        AST t = new FormalsTree();
-        return t;
-    }
-
-    public AST rDefaultStatement() throws  SyntaxError
-    {
-        AST t = new FormalsTree();
+    public AST rCaseBlock() throws SyntaxError{
+        expect(Tokens.LeftBrace);
+        AST t = new CaseTree();
+        expect(Tokens.Case);
+        expect(Tokens.LeftBracket);
+        if (!isNextTok(Tokens.RightBrace))
+        {
+            do
+            {
+                t.addKid(rExpr());
+                if (isNextTok(Tokens.Comma))
+                {
+                    scan();
+                } else {
+                    expect(Tokens.RightBracket);
+                    expect(Tokens.Hash);
+                    t.addKid(rStatement());
+                    if (isNextTok(Tokens.Case)){
+                        expect(Tokens.Case);
+                        expect(Tokens.LeftBracket);
+                        continue;
+                    }
+                    break;
+                }
+            } while (true);
+        }
+        if (isNextTok(Tokens.Default)) {
+            expect(Tokens.Default);
+            expect(Tokens.Hash);
+            t.addKid(new DefaultTree().addKid(rStatement()));
+        }
+        expect(Tokens.RightBrace);
         return t;
     }
 
@@ -276,8 +302,10 @@ public class Parser {
             t.addKid(rExpr());
             expect(Tokens.Then);
             t.addKid(rBlock());
-            expect(Tokens.Else);
-            t.addKid(rBlock());
+            if (isNextTok(Tokens.Else)){
+                expect(Tokens.Else);
+                t.addKid(rBlock());
+            }
             return t;
         }
         if (isNextTok(Tokens.While)) {
@@ -295,6 +323,12 @@ public class Parser {
         }
         if (isNextTok(Tokens.LeftBrace)) {
             return rBlock();
+        }
+        if (isNextTok(Tokens.Switch)){
+            t = new SwitchTree();
+            expect(Tokens.Switch);
+            t.addKid(rSwitchBlock());
+            return t;
         }
         t = rName();
         t = (new AssignTree()).addKid(t);
@@ -483,19 +517,18 @@ public class Parser {
             scan();
             return;
         }
-        else
-        {
-            return;
-        }
-        //throw new SyntaxError(currentToken, kind);
+        throw new SyntaxError(currentToken, kind);
     }
 
     private void scan() {
         currentToken = lex.nextToken();
+        /* // debug printout
         if (currentToken != null) {
-            currentToken.print();   // debug printout
+            currentToken.print();
         }
+
         return;
+        */
     }
 }
 

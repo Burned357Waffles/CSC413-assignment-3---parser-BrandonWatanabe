@@ -48,5 +48,8 @@ public class TokenType {
      tokens.put(Tokens.Utf16StringLit, Symbol.symbol("<utf16string>",Tokens.Utf16StringLit));
      tokens.put(Tokens.TimestampType, Symbol.symbol("timestamp",Tokens.TimestampType));
      tokens.put(Tokens.TimestampLit, Symbol.symbol("<timestamp>",Tokens.TimestampLit));
+     tokens.put(Tokens.Switch, Symbol.symbol("switch",Tokens.Switch));
+     tokens.put(Tokens.Case, Symbol.symbol("case",Tokens.Case));
+     tokens.put(Tokens.Default, Symbol.symbol("default",Tokens.Default));
    }
 }

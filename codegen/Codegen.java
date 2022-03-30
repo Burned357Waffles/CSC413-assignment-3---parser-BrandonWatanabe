@@ -508,4 +508,24 @@ public class Codegen extends ASTVisitor {
     public Object visitTimestampTree(AST t) {
         return null;
     }
+
+    @Override
+    public Object visitSwitchTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitSwitchBlockTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitCaseTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitDefaultTree(AST t) {
+        return null;
+    }
 }

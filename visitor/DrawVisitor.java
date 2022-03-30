@@ -208,21 +208,25 @@ public class DrawVisitor extends ASTVisitor {
 
   @Override
   public Object visitUtf16StringTypeTree(AST t) {
+    draw("Utf16StringType", t);
     return null;
   }
 
   @Override
   public Object visitUtf16StringTree(AST t) {
+    draw("Utf16String: " + ((Utf16StringTree)t).getSymbol().toString(), t);
     return null;
   }
 
   @Override
   public Object visitTimestampTypeTree(AST t) {
+    draw("TimestampType", t);
     return null;
   }
 
   @Override
   public Object visitTimestampTree(AST t) {
+    draw("Timestamp: " + ((TimestampTree)t).getSymbol().toString(), t);
     return null;
   }
 

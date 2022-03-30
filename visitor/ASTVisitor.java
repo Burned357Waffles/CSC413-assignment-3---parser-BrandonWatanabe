@@ -43,4 +43,9 @@ public abstract class ASTVisitor {
     public abstract Object visitUtf16StringTree(AST t);
     public abstract Object visitTimestampTypeTree(AST t);
     public abstract Object visitTimestampTree(AST t);
+    public abstract Object visitSwitchTree(AST t);
+    public abstract Object visitSwitchBlockTree(AST t);
+    public abstract Object visitCaseTree(AST t);
+    public abstract Object visitDefaultTree(AST t);
+
 }
