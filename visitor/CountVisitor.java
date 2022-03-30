@@ -175,6 +175,30 @@ public class CountVisitor extends ASTVisitor {
     return null;
   }
 
+  @Override
+  public Object visitUtf16StringTypeTree(AST t) {
+    count(t);
+    return null;
+  }
+
+  @Override
+  public Object visitUtf16StringTree(AST t) {
+    count(t);
+    return null;
+  }
+
+  @Override
+  public Object visitTimestampTypeTree(AST t) {
+    count(t);
+    return null;
+  }
+
+  @Override
+  public Object visitTimestampTree(AST t) {
+    count(t);
+    return null;
+  }
+
   // new methods here
   public Object visitStringTypeTree(AST t) {
     count(t);

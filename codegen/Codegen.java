@@ -488,4 +488,24 @@ public class Codegen extends ASTVisitor {
         storeop(new LabelOpcode(Codes.ByteCodes.BOP,op));
         return null;
     }
+
+    @Override
+    public Object visitUtf16StringTypeTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitUtf16StringTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitTimestampTypeTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitTimestampTree(AST t) {
+        return null;
+    }
 }

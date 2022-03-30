@@ -7,7 +7,7 @@ import java.io.*;
  *  each read request will return the next usable character; it
  *  maintains the source column position of the character
 */
-public class SourceReader {
+public class  SourceReader {
     private BufferedReader source;
     // line number of source program
     private int lineno = 0;
@@ -23,8 +23,6 @@ public class SourceReader {
    *  @exception IOException is thrown if there is an I/O problem
    */
   public SourceReader( String sourceFile ) throws IOException {
-    System.out.println( "Source file: " + sourceFile );
-    System.out.println( "user.dir: " + System.getProperty( "user.dir" ));
     source = new BufferedReader( new FileReader( sourceFile ));
   }
 
@@ -45,10 +43,6 @@ public class SourceReader {
       lineno++;
       position = -1;
       nextLine = source.readLine();
-
-      if( nextLine != null ) {
-        System.out.println( "READLINE:   " + nextLine );
-      }
 
       isPriorEndLine = false;
     }

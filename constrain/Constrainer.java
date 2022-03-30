@@ -49,7 +49,7 @@ public class Constrainer extends ASTVisitor {
  *  source program trees to ensure consisten processing of 
  *  functions, etc.
 */
-    public static AST readTree, writeTree, intTree, boolTree,
+    public static AST readTree, writeTree, intTree, boolTree, utf16stringTree, timestampTree,
                falseTree, trueTree, readId, writeId;
                
     public Constrainer(AST t, Parser parser) {
@@ -106,16 +106,22 @@ public class Constrainer extends ASTVisitor {
 */
     private void buildIntrinsicTrees() {
         Lexer lex = parser.getLex();
-        trueTree = new IdTree(lex.newIdToken("true",-1,-1));
-        falseTree = new IdTree(lex.newIdToken("false",-1,-1));
-        readId = new IdTree(lex.newIdToken("read",-1,-1));
-        writeId = new IdTree(lex.newIdToken("write",-1,-1));
+        trueTree = new IdTree(lex.newIdToken("true",-1,-1, -1));
+        falseTree = new IdTree(lex.newIdToken("false",-1,-1, -1));
+        readId = new IdTree(lex.newIdToken("read",-1,-1, -1));
+        writeId = new IdTree(lex.newIdToken("write",-1,-1, -1));
         boolTree = (new DeclTree()).addKid(new BoolTypeTree()).
-                 addKid(new IdTree(lex.newIdToken("<<bool>>",-1,-1)));
+                 addKid(new IdTree(lex.newIdToken("<<bool>>",-1,-1, -1)));
         decorate(boolTree.getKid(2),boolTree);  
         intTree = (new DeclTree()).addKid(new IntTypeTree()).
-                 addKid(new IdTree(lex.newIdToken("<<int>>",-1,-1)));
-        decorate(intTree.getKid(2),intTree);  
+                 addKid(new IdTree(lex.newIdToken("<<int>>",-1,-1, -1)));
+        decorate(intTree.getKid(2),intTree);
+        utf16stringTree = (new DeclTree()).addKid(new Utf16StringTypeTree()).
+                addKid(new IdTree(lex.newIdToken("<<ut16string>>",-1,-1, -1)));
+        decorate(utf16stringTree.getKid(2),utf16stringTree);
+        timestampTree = (new DeclTree()).addKid(new TimestampTypeTree()).
+                addKid(new IdTree(lex.newIdToken("<<timestamp>>",-1,-1, -1)));
+        decorate(timestampTree.getKid(2),timestampTree);
         // to facilitate type checking; this ensures int decls and id decls
         // have the same structure
         
@@ -128,7 +134,7 @@ public class Constrainer extends ASTVisitor {
         writeTree = (new FunctionDeclTree()).addKid(new IntTypeTree()).
                        addKid(writeId);
         AST decl = (new DeclTree()).addKid(new IntTypeTree()).
-                       addKid(new IdTree(lex.newIdToken("dummyFormal",-1,-1)));
+                       addKid(new IdTree(lex.newIdToken("dummyFormal",-1,-1, -1)));
         AST formals = (new FormalsTree()).addKid(decl);
         writeTree.addKid(formals).addKid(new BlockTree());
         writeTree.accept(this);
@@ -337,6 +343,28 @@ public class Constrainer extends ASTVisitor {
         
     public Object visitMultOpTree(AST t) {
         return visitAddOpTree(t);
+    }
+
+    @Override
+    public Object visitUtf16StringTypeTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitUtf16StringTree(AST t) {
+        decorate(t,utf16stringTree);
+        return utf16stringTree;
+    }
+
+    @Override
+    public Object visitTimestampTypeTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitTimestampTree(AST t) {
+        decorate(t,timestampTree);
+        return timestampTree;
     }
 
     public Object visitIntTypeTree(AST t) {return null;}

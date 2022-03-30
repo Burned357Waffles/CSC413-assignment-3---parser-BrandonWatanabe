@@ -80,4 +80,24 @@ public class PrintVisitor extends ASTVisitor {
     public Object visitRelOpTree(AST t) { print("RelOp: "+((RelOpTree)t).getSymbol().toString(),t);  return null; }
     public Object visitAddOpTree(AST t) { print("AddOp: "+((AddOpTree)t).getSymbol().toString(),t);  return null; }
     public Object visitMultOpTree(AST t) { print("MultOp: "+((MultOpTree)t).getSymbol().toString(),t);  return null; }
+
+    @Override
+    public Object visitUtf16StringTypeTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitUtf16StringTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitTimestampTypeTree(AST t) {
+        return null;
+    }
+
+    @Override
+    public Object visitTimestampTree(AST t) {
+        return null;
+    }
 }

@@ -206,6 +206,26 @@ public class DrawVisitor extends ASTVisitor {
     return null;
   }
 
+  @Override
+  public Object visitUtf16StringTypeTree(AST t) {
+    return null;
+  }
+
+  @Override
+  public Object visitUtf16StringTree(AST t) {
+    return null;
+  }
+
+  @Override
+  public Object visitTimestampTypeTree(AST t) {
+    return null;
+  }
+
+  @Override
+  public Object visitTimestampTree(AST t) {
+    return null;
+  }
+
   public Object visitStringTypeTree(AST t) {
     draw("StringType", t);
     return null;

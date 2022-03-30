@@ -140,7 +140,8 @@ public class Parser {
     }
 
     boolean startingDecl() {
-        if (isNextTok(Tokens.Int) || isNextTok(Tokens.BOOLean)) {
+        if (isNextTok(Tokens.Int) || isNextTok(Tokens.BOOLean) ||
+                isNextTok(Tokens.Utf16String) || isNextTok(Tokens.TimestampType)) {
             return true;
         }
         return false;
@@ -188,10 +189,23 @@ public class Parser {
      */
     public AST rType() throws SyntaxError {
         AST t;
-        if (isNextTok(Tokens.Int)) {
+        if (isNextTok(Tokens.Int))
+        {
             t = new IntTypeTree();
             scan();
-        } else {
+        }
+        else if (isNextTok(Tokens.Utf16String))
+        {
+            expect(Tokens.Utf16String);
+            t = new Utf16StringTypeTree();
+        }
+        else if (isNextTok(Tokens.TimestampType))
+        {
+            expect(Tokens.TimestampType);
+            t = new TimestampTypeTree();
+        }
+        else
+        {
             expect(Tokens.BOOLean);
             t = new BoolTypeTree();
         }
@@ -235,6 +249,7 @@ public class Parser {
      * @return the tree corresponding to the statement found
      * @exception SyntaxError - thrown for any syntax error
      */
+
     public AST rStatement() throws SyntaxError {
         AST t;
         if (isNextTok(Tokens.If)) {
@@ -351,6 +366,18 @@ public class Parser {
         }
         if (isNextTok(Tokens.INTeger)) {  //  -> <int>
             t = new IntTree(currentToken);
+            scan();
+            return t;
+        }
+        if (isNextTok(Tokens.Utf16StringLit))
+        {
+            t = new Utf16StringTree(currentToken);
+            scan();
+            return t;
+        }
+        if (isNextTok(Tokens.TimestampLit))
+        {
+            t = new TimestampTree(currentToken);
             scan();
             return t;
         }
