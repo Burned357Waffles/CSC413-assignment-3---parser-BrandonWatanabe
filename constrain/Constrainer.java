@@ -345,29 +345,29 @@ public class Constrainer extends ASTVisitor {
         return visitAddOpTree(t);
     }
 
-    @Override
+    
     public Object visitUtf16StringTypeTree(AST t) {
         return null;
     }
 
-    @Override
+    
     public Object visitUtf16StringTree(AST t) {
         decorate(t,utf16stringTree);
         return utf16stringTree;
     }
 
-    @Override
+    
     public Object visitTimestampTypeTree(AST t) {
         return null;
     }
 
-    @Override
+    
     public Object visitTimestampTree(AST t) {
         decorate(t,timestampTree);
         return timestampTree;
     }
 
-    @Override
+    
     public Object visitSwitchTree(AST t) {
         symtab.beginScope();
         visitKids(t);
@@ -375,7 +375,7 @@ public class Constrainer extends ASTVisitor {
         return null;
     }
 
-    @Override
+    
     public Object visitSwitchBlockTree(AST t) {
         symtab.beginScope();
         visitKids(t);
@@ -383,12 +383,12 @@ public class Constrainer extends ASTVisitor {
         return null;
     }
 
-    @Override
+    
     public Object visitCaseTree(AST t) {
         return null;
     }
 
-    @Override
+    
     public Object visitDefaultTree(AST t) {
         return null;
     }

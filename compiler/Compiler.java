@@ -42,11 +42,11 @@ public class Compiler {
       PrintVisitor printVisitor = new PrintVisitor();
       ast.accept(printVisitor);
 
-      CountVisitor ov = new CountVisitor();
+      CountVisitor cv = new CountVisitor();
+      ast.accept(cv);
+      OffsetVisitor ov = new OffsetVisitor();
       ast.accept(ov);
-      // System.out.println( ov );
-
-      DrawVisitor dv = new DrawVisitor(ov.getCount());
+      DrawOffsetVisitor dv = new DrawOffsetVisitor(cv.getCount(), ov.getOffsetMap());
       ast.accept(dv);
       try {
         File imagefile = new File(sourceFile + ".png");
@@ -68,7 +68,7 @@ public class Compiler {
       f.pack();
       f.setSize(new Dimension(dv.getImage().getWidth() + 30, dv.getImage().getHeight() + 40));
       f.setVisible(true);
-      f.setResizable(false);
+      f.setResizable(true);
       f.repaint();
     } catch (Exception e) {
       System.out.println("********exception*******" + e.toString());
