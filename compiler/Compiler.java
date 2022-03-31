@@ -33,6 +33,14 @@ public class Compiler {
   void compileProgram() {
     try {
       // System.out.println("---------------TOKENS-------------");
+      BufferedReader in = new BufferedReader(new FileReader(sourceFile));
+      String line = in.readLine();
+      while(line != null)
+      {
+        System.out.println(line);
+        line = in.readLine();
+      }
+      in.close();
       Parser parser = new Parser(sourceFile);
       AST ast = parser.execute();
 
