@@ -522,13 +522,6 @@ public class Parser {
 
     private void scan() {
         currentToken = lex.nextToken();
-        /* // debug printout
-        if (currentToken != null) {
-            currentToken.print();
-        }
-
-        return;
-        */
     }
 }
 
