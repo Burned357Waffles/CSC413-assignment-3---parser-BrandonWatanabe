@@ -14,14 +14,13 @@ public class DrawOffsetVisitor extends ASTVisitor {
     private final int nodew = 100;
     private final int nodeh = 30;
     private final int vertSep = 50;
-    private final int horizSep = 10;
+    private final int horizSep = 5;
 
     private int width;
     private int height;
 
     private int[] nCount;
     private int[] progress;
-    private int max_offset;
     private HashMap<AST, Integer> astOffset;
     private int depth = 0;
     private BufferedImage bimg;
@@ -30,14 +29,13 @@ public class DrawOffsetVisitor extends ASTVisitor {
     public DrawOffsetVisitor(int [] nCount, HashMap<AST, Integer> astOffsets) {
         this.nCount = nCount;
         this.astOffset = astOffsets;
-        this.max_offset = maxOffset();
 
         progress = new int[nCount.length];
 
         width = max(nCount) * (nodew + horizSep);
         height = nCount.length * (nodeh + vertSep);
 
-        g2 = createGraphics2D(width, height);
+        g2 = createGraphics2D(width + 500, height);
     }
 
     private int max(int[] array) {
@@ -51,18 +49,8 @@ public class DrawOffsetVisitor extends ASTVisitor {
         return max;
     }
 
-    private int maxOffset(){
-        int max = 0;
-        for (int i : astOffset.values()) {
-            if (i > max) {
-                max = i;
-            }
-        }
-        return max;
-    }
-
     public void draw(String s, AST t) {
-        int hstep = 50 + horizSep;
+        int hstep = (nodew + horizSep) /2 + 5;
         int vstep = nodeh + vertSep;
 
         int x = astOffset.get(t) * hstep;
